@@ -89,8 +89,28 @@ function Map:initWorldCollision(world)
 
 		if o.shape == "rectangle" then
 			if object.gid then
-				o.w = self.tiles[object.gid].width
-				o.h = self.tiles[object.gid].height
+				local tileset = self.tiles[object.gid].tileset
+				local lid = object.gid - self.tilesets[tileset].firstgid
+				local tile = {}
+
+				for _, t in ipairs(self.tilesets[tileset].tiles) do
+					if t.id == lid then
+						tile = t
+						break
+					end
+				end
+
+				if tile.objectGroup then
+					for _, obj in ipairs(tile.objectGroup.objects) do
+						-- Every object in the tile
+						calculateObjectPosition(obj, object)
+					end
+
+					return
+				else
+					o.w = self.tiles[object.gid].width
+					o.h = self.tiles[object.gid].height
+				end
 			end
 
 			local vertices = {
@@ -135,7 +155,7 @@ function Map:initWorldCollision(world)
 			local gid = tileset.firstgid + tile.id
 
 			if tile.objectGroup then
-				if self.tileInstances[gid] then -- check if instances exists
+				if self.tileInstances[gid] then
 					for _, instance in ipairs(self.tileInstances[gid]) do
 						for _, object in ipairs(tile.objectGroup.objects) do
 							-- Every object in every instance of a tile
@@ -613,21 +633,13 @@ function Map:removeLayer(index)
 		for i, layer in ipairs(self.layers) do
 			if layer.name == index then
 				table.remove(self.layers, i)
+				self.layers[index] = nil
 				break
 			end
 		end
 	elseif self.layers[index] then
 		table.remove(self.layers, index)
-	end
-	
-	-- if it was a tilelayer whe have to build all collision entries again
-	if layer.type == "tilelayer" then
-		self.tileInstances = {}
-		for _, lyr in ipairs(self.layers) do
-			if lyr.type == "tilelayer" then
-				Map:setSpriteBatches(lyr)
-			end
-		end
+		self.layers[name] = nil
 	end
 end
 

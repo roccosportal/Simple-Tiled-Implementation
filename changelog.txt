@@ -2,6 +2,12 @@
 Simple Tiled Implementation Change Log
 ======================================
 -------------------
+2014-09-22 : v0.8.3
+-------------------
+* Fixed:	Map:removeLayer() now works properly
+* Changed:	Tile Objects now use the tile's collision map by default
+
+-------------------
 2014-09-22 : v0.8.2
 -------------------
 * Added:	"collidable" property for objects, tiles, and layers
