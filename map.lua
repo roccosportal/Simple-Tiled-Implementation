@@ -638,6 +638,7 @@ function Map:removeLayer(index)
 			end
 		end
 	elseif self.layers[index] then
+		local name = self.layers[index].name
 		table.remove(self.layers, index)
 		self.layers[name] = nil
 	end
